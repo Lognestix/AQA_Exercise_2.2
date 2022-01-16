@@ -32,6 +32,7 @@ test {
 ## Авто-тесты находящиеся в этом репозитории.
 ```Java
 import com.codeborne.selenide.Condition;
+import com.codeborne.selenide.Selectors;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.Keys;
 
@@ -63,12 +64,13 @@ public class CardDeliveryTest {
     public void shouldSuccessfulFormSubmissionAfterInteractingWithComplexElements() {
         open("http://localhost:9999");
         $("[data-test-id=city] input").setValue("Че");
-        $(".menu").sendKeys(Keys.DOWN, Keys.DOWN, Keys.DOWN, Keys.ENTER);
-        $("[data-test-id=date] input").doubleClick().sendKeys(Keys.DELETE);
-        String currentDate = LocalDate.now()                            //Текущая дата
-                .format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));     //Формат даты день.месяц.год
-        $("[data-test-id=date] input").setValue(currentDate);
-        $(".calendar").sendKeys(Keys.ARROW_DOWN, Keys.ENTER);
+        $(Selectors.byText("Черкесск")).click();
+        $("[data-test-id=date] input").click();
+        int days = 4;                                                   //количество дней после даты по умолчанию
+        for ( int cycle = 0; cycle < days; cycle++) {
+            $(".calendar").sendKeys(Keys.ARROW_RIGHT);
+        }
+        $(".calendar").sendKeys(Keys.ENTER);
         $("[data-test-id=name] input").setValue("Джордани Йованович");
         $("[data-test-id=phone] input").setValue("+79014345676");
         $("[data-test-id=agreement]").click();
