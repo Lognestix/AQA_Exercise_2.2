@@ -1,85 +1,34 @@
 ## `Статус сборки` [![Build status](https://ci.appveyor.com/api/projects/status/cdj8dyk56n91kh93?svg=true)](https://ci.appveyor.com/project/Lognestix/aqa-exercise-2-2)
-## В build.gradle добавленна поддержка JUnit-Jupiter, Selenide и headless-режим.
-```gradle
-plugins {
-    id 'java'
-}
-
-group 'ru.netology'
-version '1.0-SNAPSHOT'
-
-sourceCompatibility = 11
-
-//Кодировка файлов (если используется русский язык в файлах)
-compileJava.options.encoding = "UTF-8"
-compileTestJava.options.encoding = "UTF-8"
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.2'
-    testImplementation 'com.codeborne:selenide:6.2.0'
-}
-
-test {
-    useJUnitPlatform()
-    //В тестах, при вызове `gradlew test -Dselenide.headless=true` будет передаватся этот параметр в JVM (где его подтянет Selenide)
-    systemProperty 'selenide.headless', System.getProperty('selenide.headless')
-}
-```
-## Авто-тесты находящиеся в этом репозитории.
-```Java
-import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.Selectors;
-import org.junit.jupiter.api.Test;
-import org.openqa.selenium.Keys;
-
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-
-import static com.codeborne.selenide.Selenide.*;
-
-public class CardDeliveryTest {
-    @Test   //Задача №1
-    public void shouldSuccessfulFormSubmission() {
-        open("http://localhost:9999");
-        $("[data-test-id=city] input").setValue("Тула");
-        $("[data-test-id=date] input").doubleClick().sendKeys(Keys.DELETE);
-        String verificationDate = LocalDate.now().plusDays(4)           //Текущая дата плюс 4 дня
-                .format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));     //Формат даты день.месяц.год
-        $("[data-test-id=date] input").setValue(verificationDate);
-        $("[data-test-id=name] input").setValue("Томас Андерсон");
-        $("[data-test-id=phone] input").setValue("+79012345678");
-        $("[data-test-id=agreement]").click();
-        $(".button").shouldHave(Condition.text("Забронировать")).click();
-        $("[data-test-id=notification]")
-                .shouldHave(Condition.text("Успешно! Встреча успешно забронирована на " + verificationDate),
-                        Duration.ofSeconds(15));                        //Загрузка не более 15 секунд
-    }
-
-    @Test   //Задача №2
-    public void shouldSuccessfulFormSubmissionAfterInteractingWithComplexElements() {
-        open("http://localhost:9999");
-        $("[data-test-id=city] input").setValue("Че");
-        $(Selectors.byText("Черкесск")).click();
-        $("[data-test-id=date] input").click();
-        int days = 4;                                                   //количество дней после даты по умолчанию
-        for ( int cycle = 0; cycle < days; cycle++) {
-            $(".calendar").sendKeys(Keys.ARROW_RIGHT);
-        }
-        $(".calendar").sendKeys(Keys.ENTER);
-        $("[data-test-id=name] input").setValue("Джордани Йованович");
-        $("[data-test-id=phone] input").setValue("+79014345676");
-        $("[data-test-id=agreement]").click();
-        $(".button").shouldHave(Condition.text("Забронировать")).click();
-        String verificationDate = LocalDate.now().plusDays(7)           //Текущая дата плюс 7 дней
-                .format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));     //Формат даты день.месяц.год
-        $("[data-test-id=notification]")
-                .shouldHave(Condition.text("Успешно! Встреча успешно забронирована на " + verificationDate),
-                        Duration.ofSeconds(15));                        //Загрузка не более 15 секунд
-    }
-}
-```
+# Репортинг (AQA_Exercise_2.2)
+## Домашнее задание по курсу "Автоматизированное тестирование"
+## Тема: «2.2. Selenide», задание №1: «Заказ доставки карты», задание №2: «Взаимодействие с комплексными элементами»
+- Применены инструменты:
+	- Selenide.
+- Тестируемая функциональность:
+	- отправка формы:
+		1. В задании №1 поля Город и Дата заполняются через прямой ввод значений (без использования выбора из выпадающего списка и всплывающего календаря).
+		1. В задании №2:
+			- ввод 2 букв в поле город, после чего выбор нужного города из выпадающего списка;
+			- выбор даты на неделю вперёд (начиная от текущей даты) через инструмент календаря.
+		1. Если все поля заполнены корректно, то форма переходит в состояние "Загрузки":
+			- состояние загрузки не должно длиться более 15 секунд.
+		1. После успешной отправки формы (завершения бронирования) появится всплывающее окно об успешном завершении бронирования.
+### Предварительные требования
+- На компьютере пользователя должна быть установлена:
+	- Intellij IDEA
+### Установка и запуск
+1. Склонировать проект на свой компьютер
+	- открыть терминал
+	- ввести команду 
+		```
+		git clone https://github.com/Lognestix/AQA_Exercise_2.2
+		```
+1. Открыть склонированный проект в Intellij IDEA
+1. В Intellij IDEA перейти во вкладку Terminal (Alt+F12) и запустить SUT командой
+	```
+	java -jar artifacts/app-card-delivery.jar
+	```
+1. Запустить авто-тесты В Intellij IDEA во вкладке Terminal открыв еще одну сессию, ввести команду
+	```
+	./gradlew clean test
+	```
