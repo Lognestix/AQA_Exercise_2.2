@@ -1,5 +1,5 @@
 ## `Статус сборки` [![Build status](https://ci.appveyor.com/api/projects/status/cdj8dyk56n91kh93?svg=true)](https://ci.appveyor.com/project/Lognestix/aqa-exercise-2-2)
-# Репортинг (AQA_Exercise_2.2)
+# Selenide (AQA_Exercise_2.2)
 ## Домашнее задание по курсу "Автоматизированное тестирование"
 ## Тема: «2.2. Selenide», задание №1: «Заказ доставки карты», задание №2: «Взаимодействие с комплексными элементами»
 - Применены инструменты:
